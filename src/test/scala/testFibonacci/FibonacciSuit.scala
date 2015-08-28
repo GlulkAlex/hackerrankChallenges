@@ -6,6 +6,7 @@ import common.FilesIO._
 import common.ShowProgress._
 import fibonacciFindingEasy.Solution.fibFrom
 import fibonacciFindingEasy.Solution.fibFrom2
+import fibonacciFindingEasy.Solution._
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -27,10 +28,13 @@ import scala.util.{Try, Success, Failure}
  */
 class FibonacciSuit
   extends FunSuite {
+
+  case class FibInput(a: Int, b: Int, n: Int)
+
   test(
-        "1: 'extractGraphComponents'" +
+        "1: 'fibFrom2'" +
           "should " +
-          "extract Int values from source"
+          "return right sequence member"
       ) {
           val outPutFilePath: String =
             "/home/gluk-alex/Documents/"
@@ -85,8 +89,6 @@ class FibonacciSuit
           println(s"'Test' started at:" +
                     startStampString1)
 
-          case class FibInput(a: Int, b: Int, n: Int)
-
           val inputParams: List[FibInput] =
             (for {
               line <- inputFileContentIter
@@ -104,25 +106,42 @@ class FibonacciSuit
 
                 FibInput(a: Int, b: Int, n: Int)
               }).toList
-    val takeNumber: Int = 10
-                println(
-                         s"First:" + takeNumber +
-                s" parameters from input file are:\n" +
-                           inputParams
-                             .map{case FibInput(a: Int, b: Int, n: Int) =>
-                                 s"{a:$a,b:$b,n:$n}"}
-                .take(takeNumber)
-                       )
+          val takeNumber: Int = 10
+          println(
+                   s"First:" + takeNumber +
+                     s" parameters from input file are:\n" +
+                     inputParams
+                     .map { case FibInput(a: Int, b: Int, n: Int) =>
+                       s"{a:$a,b:$b,n:$n}"
+                          }
+                     .take(takeNumber)
+                 )
           val results: List[Long] =
           //(
             for {
               FibInput(a: Int, b: Int, n: Int) <- inputParams
+                                                  //.take(2)
+              //.drop(4)
+                                                  //.take(1)
+              //.apply(3)
+              //.head
             } yield {
+              /*work, but wrong*/
               /*fibFrom(a = a.toInt, b = b.toInt)
               .take(n.toInt)
               .head*/
-              fibFrom2(a = a, b = b, elemOrder = n)
+              /*work, but slow*/
+              //fibFrom2(a = a, b = b, elemOrder = n)
+              /*work, but wrong math*/
+              fibonacciDoublingFromRecursive2(a = a, b = b, elemOrder = n)
               .toLong
+              /*work, but wrong*/
+              /*fastFibonacciDoubling(
+                                     initA=a,
+                                     initB=b,
+                                     n=n
+                                   )
+              .longValue()*/
             }
           //)
           //.toList
@@ -142,9 +161,43 @@ class FibonacciSuit
                  )
 
           assume(
-                  results.length == expectedResults.length &&
+                  //results.length == expectedResults.length &&
                     results == expectedResults,
                   s"must be equal")
         }
+  ignore(
+          "2: ''" +
+            "should " +
+            " "
+        ) {
+            val linesInInput: Int =
+              scala.io.StdIn.readInt()
+            val inputParams: List[FibInput] =
+              (for {
+                index <- 1 to linesInInput
+              } yield {
+                  val Array(a, b, n): Array[Int] =
+                    scala.io.StdIn.readLine()
+                    .split(" ")
+                    .map(_.toInt)
+
+                  FibInput(a: Int, b: Int, n: Int)
+                }).toList
+            /*side effect*/
+            inputParams.foreach {
+                                  case FibInput(a: Int, b: Int, n: Int) =>
+                                    //StdOut
+                                    scala.Console
+                                    .println(
+                                        fibFrom2(
+                                                  a = a,
+                                                  b = b,
+                                                  elemOrder = n))
+                                }
+
+            assume(
+                    inputParams.nonEmpty,
+                    s"must be 'nonEmpty'")
+          }
 
 }
